@@ -2,6 +2,7 @@
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using DSharpPlus.Lavalink;
 using System;
 using System.Threading.Tasks;
 using YumeChan.DreamJockey.Preconditions;
@@ -14,23 +15,37 @@ namespace YumeChan.DreamJockey.Commands
 		[Command("join"), RequireVoicePresence]
 		public async Task JoinAsync(CommandContext ctx)
 		{
-
+			VoiceCommandContext vc = new(ctx);
+			await vc.Node.ConnectAsync(vc.Channel);
+			await ctx.RespondAsync($"Joined {vc.Channel.Mention}.");
 		}
-		[Command, RequireUserPermissions(Permissions.Administrator)]
+		[Command]
 		public async Task JoinAsync(CommandContext ctx, DiscordChannel channel)
 		{
+			await ctx.EnsureVoiceOperatorAsync();
 
+			VoiceCommandContext vc = new(ctx, channel);
+			await vc.Node.ConnectAsync(vc.Channel);
+			await ctx.RespondAsync($"Joined {vc.Channel.Mention}.");
 		}
 
 		[Command("leave"), RequireVoicePresence]
 		public async Task LeaveAsync(CommandContext ctx)
 		{
-
+			VoiceCommandContext vc = new(ctx);
+			LavalinkGuildConnection conn = vc.GetGuildConnection();
+			await conn.DisconnectAsync();
+			await ctx.RespondAsync($"Left {vc.Channel.Mention}.");
 		}
-		[Command, RequireUserPermissions(Permissions.Administrator)]
+		[Command]
 		public async Task LeaveAsync(CommandContext ctx, DiscordChannel channel)
 		{
+			await ctx.EnsureVoiceOperatorAsync();
 
+			VoiceCommandContext vc = new(ctx, channel);
+			LavalinkGuildConnection conn = vc.GetGuildConnection();
+			await conn.DisconnectAsync();
+			await ctx.RespondAsync($"Left {vc.Channel.Mention}.");
 		}
 
 		[Command("play"), RequireVoicePresence]
