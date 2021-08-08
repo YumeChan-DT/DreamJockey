@@ -67,28 +67,44 @@ namespace YumeChan.DreamJockey.Commands
 		{
 			VoiceCommandContext vc = new(ctx);
 			LavalinkGuildConnection conn = await vc.GetOrCreateGuildConnectionAsync();
-
 			LavalinkLoadResult loadResult = await vc.Node.Rest.GetTracksAsync(search);
 
 			if (loadResult.LoadResultType is LavalinkLoadResultType.LoadFailed or LavalinkLoadResultType.NoMatches)
 			{
 				await ctx.RespondAsync($"Failed to find track(s) for query `{search}`.");
+				return;
 			}
 
 			LavalinkTrack track = loadResult.Tracks.First();
 			await conn.PlayAsync(track);
 			await ctx.RespondAsync($"Now playing `{track.Title}`.");
 		}
-		[Command, RequireVoicePresence]
+		[Command, RequireVoicePresence, Priority(10)]
 		public async Task PlayAsync(CommandContext ctx, Uri url)
 		{
+			VoiceCommandContext vc = new(ctx);
+			LavalinkGuildConnection conn = await vc.GetOrCreateGuildConnectionAsync();
+			LavalinkLoadResult loadResult = await vc.Node.Rest.GetTracksAsync(url);
 
+			if (loadResult.LoadResultType is LavalinkLoadResultType.LoadFailed or LavalinkLoadResultType.NoMatches)
+			{
+				await ctx.RespondAsync($"Failed to find track(s) for link `{url.AbsoluteUri}`.");
+				return;
+			}
+
+			LavalinkTrack track = loadResult.Tracks.First();
+			await conn.PlayAsync(track);
+			await ctx.RespondAsync($"Now playing `{track.Title}`.");
 		}
 
-		[Command("pause"), RequireVoicePresence]
+		[Command("stop"), RequireVoicePresence]
 		public async Task PauseAsync(CommandContext ctx)
 		{
+			VoiceCommandContext vc = new(ctx);
+			LavalinkGuildConnection conn = await vc.GetOrCreateGuildConnectionAsync();
 
+			await conn.StopAsync();
+			await ctx.RespondAsync("Player stopped.");
 		}
 	}
 }
