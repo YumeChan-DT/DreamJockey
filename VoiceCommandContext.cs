@@ -4,6 +4,7 @@ using DSharpPlus.Entities;
 using DSharpPlus.Lavalink;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace YumeChan.DreamJockey
 {
@@ -28,5 +29,6 @@ namespace YumeChan.DreamJockey
 		}
 
 		public LavalinkGuildConnection GetGuildConnection() => Node.GetGuildConnection(Channel.Guild);
+		public async Task<LavalinkGuildConnection> GetOrCreateGuildConnectionAsync() => Node.GetGuildConnection(Channel.Guild) ?? await Node.ConnectAsync(Channel);
 	}
 }

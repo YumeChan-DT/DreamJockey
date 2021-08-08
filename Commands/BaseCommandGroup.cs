@@ -4,6 +4,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Lavalink;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using YumeChan.DreamJockey.Preconditions;
 
@@ -33,25 +34,50 @@ namespace YumeChan.DreamJockey.Commands
 		public async Task LeaveAsync(CommandContext ctx)
 		{
 			VoiceCommandContext vc = new(ctx);
-			LavalinkGuildConnection conn = vc.GetGuildConnection();
-			await conn.DisconnectAsync();
-			await ctx.RespondAsync($"Left {vc.Channel.Mention}.");
+
+			if (vc.GetGuildConnection() is LavalinkGuildConnection conn)
+			{
+				await conn.DisconnectAsync();
+				await ctx.RespondAsync($"Left {vc.Channel.Mention}.");
+			}
+			else
+			{
+				await ctx.RespondAsync("Sorry, I'm currently not in any voice channel.");
+			}
 		}
 		[Command]
 		public async Task LeaveAsync(CommandContext ctx, DiscordChannel channel)
 		{
 			await ctx.EnsureVoiceOperatorAsync();
-
 			VoiceCommandContext vc = new(ctx, channel);
-			LavalinkGuildConnection conn = vc.GetGuildConnection();
-			await conn.DisconnectAsync();
-			await ctx.RespondAsync($"Left {vc.Channel.Mention}.");
+
+			if (vc.GetGuildConnection() is LavalinkGuildConnection conn)
+			{
+				await conn.DisconnectAsync();
+				await ctx.RespondAsync($"Left {vc.Channel.Mention}.");
+			}
+			else
+			{
+				await ctx.RespondAsync("Sorry, I'm currently not in any voice channel.");
+			}
 		}
 
 		[Command("play"), RequireVoicePresence]
 		public async Task PlayAsync(CommandContext ctx, [RemainingText] string search)
 		{
+			VoiceCommandContext vc = new(ctx);
+			LavalinkGuildConnection conn = await vc.GetOrCreateGuildConnectionAsync();
 
+			LavalinkLoadResult loadResult = await vc.Node.Rest.GetTracksAsync(search);
+
+			if (loadResult.LoadResultType is LavalinkLoadResultType.LoadFailed or LavalinkLoadResultType.NoMatches)
+			{
+				await ctx.RespondAsync($"Failed to find track(s) for query `{search}`.");
+			}
+
+			LavalinkTrack track = loadResult.Tracks.First();
+			await conn.PlayAsync(track);
+			await ctx.RespondAsync($"Now playing `{track.Title}`.");
 		}
 		[Command, RequireVoicePresence]
 		public async Task PlayAsync(CommandContext ctx, Uri url)
