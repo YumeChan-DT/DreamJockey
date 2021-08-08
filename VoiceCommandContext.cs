@@ -1,4 +1,5 @@
-﻿using DSharpPlus.CommandsNext;
+﻿using DSharpPlus;
+using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
 using DSharpPlus.Lavalink;
 using System;
@@ -19,6 +20,13 @@ namespace YumeChan.DreamJockey
 			Lavalink = ctx.Client.GetLavalink();
 			Node ??= Lavalink.ConnectedNodes?.Values.First() ?? throw new ApplicationException("Lavalink is not connected.");
 			Channel ??= voiceChannel ?? ctx.Member.VoiceState?.Channel ?? throw new InvalidOperationException($"No Voice channel has been set for current {nameof(VoiceCommandContext)}.");
+
+			if (Channel.Type is not ChannelType.Voice)
+			{
+				throw new InvalidOperationException("Designated channel is not a valid voice channel.");
+			}
 		}
+
+		public LavalinkGuildConnection GetGuildConnection() => Node.GetGuildConnection(Channel.Guild);
 	}
 }
