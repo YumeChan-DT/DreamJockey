@@ -1,41 +1,50 @@
-﻿using DSharpPlus.CommandsNext;
+﻿using DSharpPlus;
+using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using YumeChan.DreamJockey.Preconditions;
 
 namespace YumeChan.DreamJockey.Commands
 {
-	[Group("dreamjockey"), Aliases("dj", "music")]
+	[Group("dreamjockey"), Aliases("dj", "music"), RequirePermissions(Permissions.AccessChannels | Permissions.Speak)]
 	public partial class BaseCommandGroup : BaseCommandModule
 	{
-		[Command("join")]
+		[Command("join"), RequireVoicePresence]
+		public async Task JoinAsync(CommandContext ctx)
+		{
+
+		}
+		[Command, RequireUserPermissions(Permissions.Administrator)]
 		public async Task JoinAsync(CommandContext ctx, DiscordChannel channel)
 		{
 
 		}
 
-		[Command("leave")]
+		[Command("leave"), RequireVoicePresence]
+		public async Task LeaveAsync(CommandContext ctx)
+		{
+
+		}
+		[Command, RequireUserPermissions(Permissions.Administrator)]
 		public async Task LeaveAsync(CommandContext ctx, DiscordChannel channel)
 		{
 
 		}
 
-		[Command("play")]
+		[Command("play"), RequireVoicePresence]
 		public async Task PlayAsync(CommandContext ctx, [RemainingText] string search)
 		{
 
 		}
-		[Command]
+		[Command, RequireVoicePresence]
 		public async Task PlayAsync(CommandContext ctx, Uri url)
 		{
 
 		}
 
-		[Command("pause")]
+		[Command("pause"), RequireVoicePresence]
 		public async Task PauseAsync(CommandContext ctx)
 		{
 
