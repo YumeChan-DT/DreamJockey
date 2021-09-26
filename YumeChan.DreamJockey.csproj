@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
-    <Version>1.0.1-beta</Version>
+    <Version>1.0.2-beta</Version>
     <Authors>Sakura Akeno Isayeki</Authors>
     <Company>Nodsoft Systems</Company>
     <Product>YumeChan DreamJockey</Product>
@@ -24,7 +24,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="YumeChan.PluginBase" Version="2.3.0">
+    <PackageReference Include="DSharpPlus.Lavalink" Version="4.1.0" />
+    <PackageReference Include="YumeChan.PluginBase" Version="2.4.3">
       <IncludeAssets></IncludeAssets>
     </PackageReference>
   </ItemGroup>

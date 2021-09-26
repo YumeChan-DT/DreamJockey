@@ -5,17 +5,17 @@ namespace YumeChan.DreamJockey
 {
 	public class PluginManifest : Plugin
 	{
-		public override string PluginDisplayName => "YumeChan DreamJockey";
-		public override bool PluginStealth => false;
+		public override string DisplayName => "YumeChan DreamJockey";
+		public override bool StealthMode => false;
 
-		public override Task LoadPlugin()
+		public override Task LoadAsync()
 		{
-			return base.LoadPlugin();
+			return base.LoadAsync();
 		}
 
-		public override Task UnloadPlugin()
+		public override Task UnloadAsync()
 		{
-			return base.UnloadPlugin();
+			return base.UnloadAsync();
 		}
 	}
 }
