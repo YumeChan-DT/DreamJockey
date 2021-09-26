@@ -5,6 +5,7 @@ using DSharpPlus.Entities;
 using DSharpPlus.Lavalink;
 using System;
 using System.Linq;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 using YumeChan.DreamJockey.Preconditions;
 
@@ -98,13 +99,61 @@ namespace YumeChan.DreamJockey.Commands
 		}
 
 		[Command("stop"), RequireVoicePresence]
-		public async Task PauseAsync(CommandContext ctx)
+		public async Task StopAsync(CommandContext ctx)
 		{
 			VoiceCommandContext vc = new(ctx);
 			LavalinkGuildConnection conn = await vc.GetOrCreateGuildConnectionAsync();
 
 			await conn.StopAsync();
 			await ctx.RespondAsync("Player stopped.");
+		}
+
+		[Command("pause"), RequireVoicePresence]
+		public async Task PauseAsync(CommandContext ctx)
+		{
+			await ctx.EnsureVoiceOperatorAsync();
+			VoiceCommandContext vc = new(ctx);
+
+			if (vc.GetGuildConnection() is LavalinkGuildConnection conn)
+			{
+				if (conn.CurrentState.CurrentTrack is LavalinkTrack track)
+				{
+					await conn.PauseAsync();
+					await ctx.RespondAsync($"Paused `{track.Title}`.");
+				}
+				else
+				{
+					await ctx.RespondAsync("Sorry, there is nothing to pause.");
+				}
+			}
+			else
+			{
+				await ctx.RespondAsync("Sorry, I'm currently not in any voice channel.");
+			}
+		}
+
+		[Command("resume"), RequireVoicePresence]
+		public async Task ResumeAsync(CommandContext ctx)
+		{
+			await ctx.EnsureVoiceOperatorAsync();
+			VoiceCommandContext vc = new(ctx);
+
+			if (vc.GetGuildConnection() is LavalinkGuildConnection conn)
+			{
+				if (conn.CurrentState.CurrentTrack is LavalinkTrack track)
+				{
+					await conn.ResumeAsync();
+					await ctx.RespondAsync($"Resumed `{track.Title}`.");
+				}
+				else
+				{
+					await ctx.RespondAsync("Sorry, there is nothing to resume.");
+				}
+			}
+			else
+			{
+				await ctx.RespondAsync("Sorry, I'm currently not in any voice channel.");
+			}
 		}
 	}
 }
