@@ -24,7 +24,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="YumeChan.PluginBase" Version="2.3.0">
+    <PackageReference Include="DSharpPlus.Lavalink" Version="4.1.0" />
+    <PackageReference Include="YumeChan.PluginBase" Version="2.4.3">
       <IncludeAssets></IncludeAssets>
     </PackageReference>
   </ItemGroup>
