@@ -14,7 +14,7 @@
   <PropertyGroup>
     <OutDir>$(YumeChan_PluginsLocation)\$(MSBuildProjectName)</OutDir>
     <OutputPath>$(YumeChan_PluginsLocation)\$(MSBuildProjectName)</OutputPath>
-    <EnforceCodeStyleInBuild>false</EnforceCodeStyleInBuild>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
   </PropertyGroup>
 
   <ItemGroup>
