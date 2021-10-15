@@ -11,10 +11,14 @@ using YumeChan.DreamJockey.Preconditions;
 
 namespace YumeChan.DreamJockey.Commands
 {
-	[Group("dreamjockey"), Aliases("dj", "music"), RequirePermissions(Permissions.AccessChannels | Permissions.Speak)]
+#pragma warning disable CA1822 // Mark members as static
+
+	[Group("dreamjockey"), Aliases("dj", "music"), Description("Provides Music-oriented commands for voice channels.")]
+	[RequirePermissions(Permissions.AccessChannels | Permissions.Speak)]
 	public partial class BaseCommandGroup : BaseCommandModule
 	{
-		[Command("join"), RequireVoicePresence]
+		[Command("join"), RequireVoicePresence, Description("Allows the Bot to join the calling user's voice channel.")]
+
 		public async Task JoinAsync(CommandContext ctx)
 		{
 			VoiceCommandContext vc = new(ctx);
@@ -31,7 +35,7 @@ namespace YumeChan.DreamJockey.Commands
 			await ctx.RespondAsync($"Joined {vc.Channel.Mention}.");
 		}
 
-		[Command("leave"), RequireVoicePresence]
+		[Command("leave"), RequireVoicePresence, Description("Instructs the Bot to leave its current voice channel.")]
 		public async Task LeaveAsync(CommandContext ctx)
 		{
 			VoiceCommandContext vc = new(ctx);
@@ -63,8 +67,9 @@ namespace YumeChan.DreamJockey.Commands
 			}
 		}
 
-		[Command("play"), RequireVoicePresence]
-		public async Task PlayAsync(CommandContext ctx, [RemainingText] string search)
+		[Command("play"), RequireVoicePresence, Description("Joins a user's voice channel and plays music.")]
+		public async Task PlayAsync(CommandContext ctx,
+			[RemainingText, Description("Search query to seek & load track from.")] string search)
 		{
 			VoiceCommandContext vc = new(ctx);
 			LavalinkGuildConnection conn = await vc.GetOrCreateGuildConnectionAsync();
@@ -81,7 +86,8 @@ namespace YumeChan.DreamJockey.Commands
 			await ctx.RespondAsync($"Now playing `{track.Title}`.");
 		}
 		[Command, RequireVoicePresence, Priority(10)]
-		public async Task PlayAsync(CommandContext ctx, Uri url)
+		public async Task PlayAsync(CommandContext ctx,
+			[Description("URL to load track from.")] Uri url)
 		{
 			VoiceCommandContext vc = new(ctx);
 			LavalinkGuildConnection conn = await vc.GetOrCreateGuildConnectionAsync();
@@ -98,7 +104,7 @@ namespace YumeChan.DreamJockey.Commands
 			await ctx.RespondAsync($"Now playing `{track.Title}`.");
 		}
 
-		[Command("stop"), RequireVoicePresence]
+		[Command("stop"), RequireVoicePresence, Description("Stops the currently played track.")]
 		public async Task StopAsync(CommandContext ctx)
 		{
 			VoiceCommandContext vc = new(ctx);
@@ -108,7 +114,7 @@ namespace YumeChan.DreamJockey.Commands
 			await ctx.RespondAsync("Player stopped.");
 		}
 
-		[Command("pause"), RequireVoicePresence]
+		[Command("pause"), RequireVoicePresence, Description("Puts the current playing track on hold.")]
 		public async Task PauseAsync(CommandContext ctx)
 		{
 			await ctx.EnsureVoiceOperatorAsync();
@@ -132,7 +138,7 @@ namespace YumeChan.DreamJockey.Commands
 			}
 		}
 
-		[Command("resume"), RequireVoicePresence]
+		[Command("resume"), RequireVoicePresence, Description("resumes a currently paused track.")]
 		public async Task ResumeAsync(CommandContext ctx)
 		{
 			await ctx.EnsureVoiceOperatorAsync();
