@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <Version>1.0.1-beta</Version>
     <Authors>Sakura Akeno Isayeki</Authors>
     <Company>Nodsoft Systems</Company>
@@ -12,8 +12,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <OutDir>$(YumeChan_PluginsLocation)</OutDir>
-    <OutputPath>$(YumeChan_PluginsLocation)</OutputPath>
+    <OutDir>$(YumeChan_PluginsLocation)\$(MSBuildProjectName)</OutDir>
+    <OutputPath>$(YumeChan_PluginsLocation)\$(MSBuildProjectName)</OutputPath>
     <EnforceCodeStyleInBuild>false</EnforceCodeStyleInBuild>
   </PropertyGroup>
 
