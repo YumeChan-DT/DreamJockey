@@ -14,7 +14,6 @@
   <PropertyGroup>
     <OutDir>$(YumeChan_PluginsLocation)\$(MSBuildProjectName)</OutDir>
     <OutputPath>$(YumeChan_PluginsLocation)\$(MSBuildProjectName)</OutputPath>
-    <EnableDynamicLoading>true</EnableDynamicLoading>
   </PropertyGroup>
 
   <ItemGroup>
@@ -25,6 +24,7 @@
 
   <ItemGroup>
     <PackageReference Include="DSharpPlus.Lavalink" Version="4.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0-rc.2.21480.5" />
     <PackageReference Include="YumeChan.PluginBase" Version="2.4.3">
       <IncludeAssets></IncludeAssets>
     </PackageReference>
