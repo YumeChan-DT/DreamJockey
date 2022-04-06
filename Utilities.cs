@@ -9,7 +9,7 @@ namespace YumeChan.DreamJockey;
 
 public static class Utilities
 {
-	public static IGlobalConfig PopulateConfig(this IGlobalConfig config)
+	public static IPluginConfig PopulateConfig(this IPluginConfig config)
 	{
 		config.CullingSpanMinutes ??= 5;
 

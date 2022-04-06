@@ -2,7 +2,7 @@
   "profiles": {
     "Attach to YumeChan": {
       "commandName": "Executable",
-      "executablePath": "D:\\Code\\Source\\YumeChan\\build\\YumeChan.NetRunner.exe",
+      "executablePath": "D:\\Code\\Source\\YumeChan\\build\\YumeChan.ConsoleRunner.exe",
       "workingDirectory": "D:\\Code\\Source\\YumeChan\\build",
       "nativeDebugging": false
     }

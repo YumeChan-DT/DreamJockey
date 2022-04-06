@@ -17,22 +17,25 @@ public class IdleInstancesCullingHandler
 {
 	private readonly DiscordClient _discordClient;
 	private readonly ILogger<IdleInstancesCullingHandler> _logger;
-	private readonly PeriodicTimer _timer;
+	private readonly IPluginConfig _config;
+	private PeriodicTimer _timer;
 
 	private Task _cullingLoop;
 	private CancellationTokenSource _cullingLoopCts;
 
-	public IdleInstancesCullingHandler(DiscordClient discordClient, ILogger<IdleInstancesCullingHandler> logger)
+	public IdleInstancesCullingHandler(DiscordClient discordClient, ILogger<IdleInstancesCullingHandler> logger, IPluginConfig config)
 	{
 		_discordClient = discordClient;
 		_logger = logger;
-		_timer = new(TimeSpan.FromMinutes(5));
+		_config = config;
 	}
 
 	public Task StartAsync(CancellationToken _)
 	{
 		_cullingLoopCts = new();
+		_timer = new(TimeSpan.FromMinutes(_config.CullingSpanMinutes ?? 5));
 		_cullingLoop = Task.Factory.StartNew(() => HandleCullingCycles(_cullingLoopCts.Token));
+		
 
 		_logger.LogInformation("Started IdleInstancesCullingHandler.");
 		return Task.CompletedTask;
@@ -49,16 +52,21 @@ public class IdleInstancesCullingHandler
 	{
 		while (await _timer.WaitForNextTickAsync(ct))
 		{
-			_logger.LogTrace("Startng idle-culling cycle...");
-
-			_discordClient.Guilds.Values.AsParallel().AsUnordered().WithCancellation(ct).ForAll(async guild =>
-			{
-				if (guild.CurrentMember.VoiceState?.Channel is DiscordChannel channel && channel.Users.Count() is 1)
-				{
-					await guild.CurrentMember.ModifyAsync(m => m.VoiceChannel = null);
-					_logger.LogDebug("Culled idle voice instance from guild {guildId} (channel {channelId}).", guild.Id, channel.Id);
-				}
-			});
+			CullIdleInstances(ct);
 		}
+	}
+
+	public void CullIdleInstances(CancellationToken ct)
+	{
+		_logger.LogTrace("Startng idle-culling cycle...");
+
+		_discordClient.Guilds.Values.AsParallel().AsUnordered().WithCancellation(ct).ForAll(async guild =>
+		{
+			if (guild.CurrentMember.VoiceState?.Channel is DiscordChannel channel && channel.Users.Count() is 1)
+			{
+				await guild.CurrentMember.ModifyAsync(m => m.VoiceChannel = null);
+				_logger.LogDebug("Culled idle voice instance from guild {guildId} (channel {channelId}).", guild.Id, channel.Id);
+			}
+		});
 	}
 }

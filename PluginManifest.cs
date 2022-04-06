@@ -10,7 +10,7 @@ namespace YumeChan.DreamJockey
 {
 	public class PluginManifest : Plugin
 	{
-		internal  const string GlobalConfigFilename = "globalconfig";
+		internal const string GlobalConfigFilename = "global-config.json";
 
 		private readonly IdleInstancesCullingHandler _cullingHandler;
 
@@ -43,7 +43,11 @@ namespace YumeChan.DreamJockey
 	{
 		public override IServiceCollection ConfigureServices(IServiceCollection services)
 		{
-			//**/services.AddSingleton((services) => services.GetRequiredService<IConfigProvider<IGlobalConfig>>().InitConfig(PluginManifest.GlobalConfigFilename).PopulateConfig());
+			services.AddSingleton(services => 
+				services.GetRequiredService<IInterfaceConfigProvider<IPluginConfig>>()
+					.InitConfig(PluginManifest.GlobalConfigFilename)
+					.PopulateConfig());
+			
 			services.AddSingleton<IdleInstancesCullingHandler>();
 
 			return services;
