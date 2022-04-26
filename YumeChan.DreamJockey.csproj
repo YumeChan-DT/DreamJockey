@@ -24,9 +24,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="DSharpPlus.Lavalink" Version="4.2.0-nightly-01102" />
+    <PackageReference Include="DSharpPlus.Lavalink" Version="4.2.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
-    <PackageReference Include="YumeChan.PluginBase" Version="2.6.0" />
+    <PackageReference Include="YumeChan.PluginBase" Version="3.0.0" />
   </ItemGroup>
 
 </Project>
