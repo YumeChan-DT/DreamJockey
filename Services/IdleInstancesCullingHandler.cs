@@ -30,11 +30,11 @@ public class IdleInstancesCullingHandler
 		_config = config;
 	}
 
-	public Task StartAsync(CancellationToken _)
+	public Task StartAsync(CancellationToken ct)
 	{
 		_cullingLoopCts = new();
 		_timer = new(TimeSpan.FromMinutes(_config.CullingSpanMinutes ?? 5));
-		_cullingLoop = Task.Factory.StartNew(() => HandleCullingCycles(_cullingLoopCts.Token));
+		_cullingLoop = Task.Factory.StartNew(() => HandleCullingCycles(_cullingLoopCts.Token), ct);
 		
 
 		_logger.LogInformation("Started IdleInstancesCullingHandler.");
