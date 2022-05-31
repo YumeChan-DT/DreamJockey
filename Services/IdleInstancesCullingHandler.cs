@@ -62,7 +62,7 @@ public class IdleInstancesCullingHandler
 
 		_discordClient.Guilds.Values.AsParallel().AsUnordered().WithCancellation(ct).ForAll(async guild =>
 		{
-			if (guild.CurrentMember.VoiceState?.Channel is DiscordChannel channel && channel.Users.Count() is 1)
+			if (guild.CurrentMember.VoiceState?.Channel is { Users.Count: 1 } channel)
 			{
 				await guild.CurrentMember.ModifyAsync(m => m.VoiceChannel = null);
 				_logger.LogDebug("Culled idle voice instance from guild {guildId} (channel {channelId}).", guild.Id, channel.Id);
