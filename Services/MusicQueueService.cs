@@ -18,8 +18,10 @@ public class MusicQueueService
 	/// <returns>The music queue.</returns>
 	public Queue<LavalinkTrack>? GetMusicQueue(VoiceCommandContext vc, bool create = false)
 	{
+		bool exists = _musicQueues.TryGetValue(vc.Context.Guild.Id, out Queue<LavalinkTrack>? queue);
+		
 		// Gets or creates the music queue for the specified guild.
-		if (!_musicQueues.TryGetValue(vc.Context.Guild.Id, out Queue<LavalinkTrack>? queue) && create)
+		if (!exists && create)
 		{
 			queue = new();
 			_musicQueues.Add(vc.Context.Guild.Id, queue);
@@ -29,7 +31,7 @@ public class MusicQueueService
 		return queue;
 	}
 	
-	public Queue<LavalinkTrack>? GetMusicQueue(ulong guildId) => !_musicQueues.TryGetValue(guildId, out Queue<LavalinkTrack>? queue) ? queue : null;
+	public Queue<LavalinkTrack>? GetMusicQueue(ulong guildId) => _musicQueues.TryGetValue(guildId, out Queue<LavalinkTrack>? queue) ? queue : null;
 
 	/// <summary>
 	/// Clears the music queue for a specified guild.

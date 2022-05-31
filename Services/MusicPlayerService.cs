@@ -28,7 +28,7 @@ public class MusicPlayerService
 			return Failure();
 		}
 
-		await GetContextGuildConnectionAsync(vc);
+		await GetContextGuildConnectionAsync(vc, true);
 		return Success();
 	}
 
@@ -150,8 +150,9 @@ public class MusicPlayerService
 	public async Task<OperationResult<LavalinkTrack>> QueueAsync(VoiceCommandContext vc, Uri uri)
 	{
 		// Get the current queue for the guild.
-		// If there is no queue, forward the call to PlayAsync.
-		if (_queueService.GetMusicQueue(vc) is not { Count: > 0 } queue)
+		Queue<LavalinkTrack>? queue = _queueService.GetMusicQueue(vc);
+
+		if (queue is not { Count: > 0 } && vc.GetGuildConnection()?.CurrentState.CurrentTrack is null)
 		{
 			return await PlayAsync(vc, uri);
 		}
