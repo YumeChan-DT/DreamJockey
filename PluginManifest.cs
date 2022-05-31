@@ -50,6 +50,7 @@ public class Dependencies : DependencyInjectionHandler
 			
 		services.AddSingleton<IdleInstancesCullingHandler>();
 		services.AddSingleton<MusicPlayerService>();
+		services.AddSingleton<MusicQueueService>();
 
 		return services;
 	}
