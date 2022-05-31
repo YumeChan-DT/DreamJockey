@@ -158,4 +158,47 @@ public partial class BaseCommandGroup : BaseCommandModule
 		
 		await ctx.RespondAsync(result.Message ?? "Unknown error.");
 	}
+	
+	/// <summary>
+	/// Queues a track found by a specified search query.
+	/// </summary>
+	[Command("queue"), RequireUserVoicePresence, Description("Queues a track to be played after the current track.")]
+	public async Task QueueAsync(CommandContext ctx,
+		[RemainingText, Description("Search query to seek & load track from.")]
+		string search)
+	{
+		OperationResult<IEnumerable<LavalinkTrack>> result = await _playerService.QueueAsync(new(ctx), search);
+		await ctx.RespondAsync(result.Message!);
+	}
+	
+	/// <summary>
+	/// Queues a track found by a specified URI.
+	/// </summary>
+	[Command, RequireUserVoicePresence, Priority(10)]
+	public async Task QueueAsync(CommandContext ctx,
+		[Description("URL to load track from.")]
+		Uri url)
+	{
+		OperationResult<LavalinkTrack> result = await _playerService.QueueAsync(new(ctx), url);
+		await ctx.RespondAsync(result.Message!);
+	}
+	
+	/*
+	 * I swear, GitHub Copilot is a work of art.
+	 * Thank you dear MS pals! <3
+	 * 
+	 *	- Sakura Akeno Isayeki
+	 */
+	
+	/// <summary>
+	/// Instructs the bot to skip the currently playing track.
+	/// </summary>
+	[Command("skip"), RequireUserVoicePresence, Description("Skips the currently playing track.")]
+	public async Task SkipAsync(CommandContext ctx)
+	{
+		await ctx.EnsureVoiceOperatorAsync();
+		OperationResult result = await _playerService.SkipAsync(new(ctx));
+		
+		await ctx.RespondAsync(result.Message ?? "Unknown error.");
+	}
 }

@@ -96,7 +96,7 @@ public class MusicPlayerService
         	return Failure<LavalinkTrack>(null, "No connection to a voice channel.");
         }
 		
-		OperationResult<LavalinkLoadResult> loadResult = await LookupTracksAsync(vc, query);
+		OperationResult<LavalinkLoadResult> loadResult = await LookupTracksAsync(vc, uri);
 
 		if (loadResult is not { Status: OperationStatus.Failure, Result: { } tracks })
 		{
