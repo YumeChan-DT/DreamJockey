@@ -64,20 +64,21 @@ public class MusicPlayerService
 	/// </remarks>
 	public async Task<OperationResult<IEnumerable<LavalinkTrack>>> PlayAsync(VoiceCommandContext vc, string query)
 	{
-		if ((await GetContextGuildConnectionAsync(vc)).Result is not { } conn)
+		if ((await GetContextGuildConnectionAsync(vc, true)).Result is not { } conn)
 		{
 			return Failure<IEnumerable<LavalinkTrack>>(null, "No connection to a voice channel.");
 		}
 
 		OperationResult<LavalinkLoadResult> loadResult = await LookupTracksAsync(vc, query);
 
-		if (loadResult is not { Status: OperationStatus.Failure, Result: { } tracks })
+		if (loadResult is not { Status: OperationStatus.Success, Result: { } tracks })
 		{
 			return Failure<IEnumerable<LavalinkTrack>>(loadResult.Result?.Tracks, loadResult.Message);
 		}
 		
 		LavalinkTrack track = tracks.Tracks.First();
-		_queueService.GetMusicQueue(vc, true)!.Enqueue(track);
+		_queueService.ClearMusicQueue(vc.Context.Guild.Id);
+		_queueService.GetMusicQueue(vc, true); // Provision a queue if it doesn't exist.
 		await conn.PlayAsync(track);
 
 		return Success(tracks.Tracks, $"Now playing `{track.Title}`.");
@@ -91,20 +92,21 @@ public class MusicPlayerService
 	/// </remarks>
 	public async Task<OperationResult<LavalinkTrack>> PlayAsync(VoiceCommandContext vc, Uri uri)
 	{
-		if ((await GetContextGuildConnectionAsync(vc)).Result is not { } conn)
+		if ((await GetContextGuildConnectionAsync(vc, true)).Result is not { } conn)
         {
         	return Failure<LavalinkTrack>(null, "No connection to a voice channel.");
         }
 		
 		OperationResult<LavalinkLoadResult> loadResult = await LookupTracksAsync(vc, uri);
 
-		if (loadResult is not { Status: OperationStatus.Failure, Result: { } tracks })
+		if (loadResult is not { Status: OperationStatus.Success, Result: { } tracks })
 		{
 			return Failure<LavalinkTrack>(null, loadResult.Message);
 		}
 
 		LavalinkTrack track = tracks.Tracks.First();
-		_queueService.GetMusicQueue(vc, true)!.Enqueue(track);
+		_queueService.ClearMusicQueue(vc.Context.Guild.Id);
+		_queueService.GetMusicQueue(vc, true); // Provision a queue if it doesn't exist.
 		await conn.PlayAsync(track);
 		
 		return Success(track, $"Now playing `{track.Title}`.");
