@@ -302,6 +302,7 @@ public class MusicPlayerService
 		// Otherwise grab from context
 		if (vc.GetGuildConnection() is { } existing)
 		{
+			// Add to dictionary for later use
 			_guildConnections.TryAdd(vc.Channel.Guild.Id, existing);
 			return existing;
 		}
@@ -309,7 +310,11 @@ public class MusicPlayerService
 		// No connection. Can we create one?
 		if (createIfNotExists)
 		{
-			LavalinkGuildConnection created = await vc.GetOrCreateGuildConnectionAsync();
+			LavalinkGuildConnection created = await vc.Node.ConnectAsync(vc.Channel);
+			
+			// Set bot's voice connection as deafened, for network traffic & privacy reasons
+			await created.Guild.Members[vc.Context.Client.CurrentUser.Id].SetDeafAsync(true, "[DreamJockey] Set self to deafened for network traffic & privacy.");
+
 			_guildConnections.Add(vc.Channel.Guild.Id, created);
 			return created;
 		}
