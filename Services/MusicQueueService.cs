@@ -29,6 +29,12 @@ public class MusicQueueService
 			_musicQueues.Add(vc.Context.Guild.Id, queue);
 			_statusChannels.Add(vc.Context.Guild.Id, vc.Context.Channel);
 			HookLavalinkEvents(vc);
+			
+			// If the lavalink connection exists, hook leave events to properly clear the queue.
+			if (vc.GetGuildConnection() is { } conn)
+			{
+				conn.DiscordWebSocketClosed += OnLavalinkConnectionClosed;
+			}
 		}
 
 		return queue;
@@ -42,11 +48,8 @@ public class MusicQueueService
 	/// <param name="guildId">The guild id.</param>
 	public void ClearMusicQueue(ulong guildId)
 	{
-		if (_musicQueues.ContainsKey(guildId))
-		{
-			_musicQueues.Remove(guildId);
-			_statusChannels.Remove(guildId);
-		}
+		_musicQueues.Remove(guildId);
+		_statusChannels.Remove(guildId);
 	}
 
 	/// <summary>
@@ -107,5 +110,16 @@ public class MusicQueueService
 				}
 			}
 		}
+	}
+	
+	/// <summary>
+	/// Trigerred when a Lavalink connection is closed (WebSocket closed).
+	/// </summary>
+	/// <param name="conn">The Lavalink connection.</param>
+	/// <param name="e">The event arguments.</param>
+	private Task OnLavalinkConnectionClosed(LavalinkGuildConnection conn, WebSocketCloseEventArgs e)
+	{
+		ClearMusicQueue(conn.Guild.Id);
+		return Task.CompletedTask;
 	}
 }
