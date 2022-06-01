@@ -49,6 +49,8 @@ public class Dependencies : DependencyInjectionHandler
 				.PopulateConfig());
 			
 		services.AddSingleton<IdleInstancesCullingHandler>();
+		services.AddSingleton<MusicPlayerService>();
+		services.AddSingleton<MusicQueueService>();
 
 		return services;
 	}

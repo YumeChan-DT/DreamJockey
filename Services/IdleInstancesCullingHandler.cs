@@ -30,11 +30,11 @@ public class IdleInstancesCullingHandler
 		_config = config;
 	}
 
-	public Task StartAsync(CancellationToken _)
+	public Task StartAsync(CancellationToken ct)
 	{
 		_cullingLoopCts = new();
 		_timer = new(TimeSpan.FromMinutes(_config.CullingSpanMinutes ?? 5));
-		_cullingLoop = Task.Factory.StartNew(() => HandleCullingCycles(_cullingLoopCts.Token));
+		_cullingLoop = Task.Factory.StartNew(() => HandleCullingCycles(_cullingLoopCts.Token), ct);
 		
 
 		_logger.LogInformation("Started IdleInstancesCullingHandler.");
@@ -62,7 +62,7 @@ public class IdleInstancesCullingHandler
 
 		_discordClient.Guilds.Values.AsParallel().AsUnordered().WithCancellation(ct).ForAll(async guild =>
 		{
-			if (guild.CurrentMember.VoiceState?.Channel is DiscordChannel channel && channel.Users.Count() is 1)
+			if (guild.CurrentMember.VoiceState?.Channel is { Users.Count: 1 } channel)
 			{
 				await guild.CurrentMember.ModifyAsync(m => m.VoiceChannel = null);
 				_logger.LogDebug("Culled idle voice instance from guild {guildId} (channel {channelId}).", guild.Id, channel.Id);

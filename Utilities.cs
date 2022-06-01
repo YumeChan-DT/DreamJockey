@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DSharpPlus.CommandsNext;
 using YumeChan.DreamJockey.Data;
 
 namespace YumeChan.DreamJockey;
@@ -15,4 +17,7 @@ public static class Utilities
 
 		return config;
 	}
+	
+	[Pure]
+	public static VoiceCommandContext GetVoiceContext(this CommandContext ctx) => new(ctx);
 }
