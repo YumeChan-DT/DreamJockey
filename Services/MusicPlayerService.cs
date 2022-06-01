@@ -201,6 +201,26 @@ public class MusicPlayerService
 	}
 	
 	/// <summary>
+	/// Clears the current queue.
+	/// </summary>
+	/// <remarks>
+	/// This method will not stop any track currrently playing.
+	/// </remarks>
+	public OperationResult ClearQueue(VoiceCommandContext vc)
+	{
+		// Check if there is a queue. Return a failure if there is not.
+		if (_queueService.GetMusicQueue(vc) is not { Count: > 0 })
+		{
+			return new(OperationStatus.Failure, "No queue to clear.");
+		}
+		
+		// Clear the queue.
+		_queueService.ClearMusicQueue(vc.Context.Guild.Id);
+
+		return Success("Queue cleared.");
+	}	
+
+	/// <summary>
 	/// Stops the currently playing track.
 	/// </summary>
 	public async Task<OperationResult> StopAsync(VoiceCommandContext vc)

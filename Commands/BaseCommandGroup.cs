@@ -141,9 +141,7 @@ public partial class BaseCommandGroup : BaseCommandModule
 	[Command("pause"), RequireUserVoicePresence, Description("Puts the currently playing track on hold.")]
 	public async Task PauseAsync(CommandContext ctx)
 	{
-		await ctx.EnsureVoiceOperatorAsync();
 		OperationResult result = await _playerService.PauseAsync(new(ctx));
-
 		await ctx.RespondAsync(result.Message ?? "Unknown error.");
 	}
 
@@ -153,9 +151,7 @@ public partial class BaseCommandGroup : BaseCommandModule
 	[Command("resume"), RequireUserVoicePresence, Description("Resumes a currently paused track.")]
 	public async Task ResumeAsync(CommandContext ctx)
 	{
-		await ctx.EnsureVoiceOperatorAsync();
 		OperationResult result = await _playerService.ResumeAsync(new(ctx));
-		
 		await ctx.RespondAsync(result.Message ?? "Unknown error.");
 	}
 	
@@ -196,9 +192,17 @@ public partial class BaseCommandGroup : BaseCommandModule
 	[Command("skip"), RequireUserVoicePresence, Description("Skips the currently playing track.")]
 	public async Task SkipAsync(CommandContext ctx)
 	{
-		await ctx.EnsureVoiceOperatorAsync();
 		OperationResult result = await _playerService.SkipAsync(new(ctx));
-		
+		await ctx.RespondAsync(result.Message ?? "Unknown error.");
+	}
+	
+	/// <summary>
+	/// Clears the queue.
+	/// </summary>
+	[Command("clear"), RequireUserVoicePresence, Description("Clears the music queue.")]
+	public async Task ClearAsync(CommandContext ctx)
+	{
+		OperationResult result = _playerService.ClearQueue(new(ctx));
 		await ctx.RespondAsync(result.Message ?? "Unknown error.");
 	}
 }
