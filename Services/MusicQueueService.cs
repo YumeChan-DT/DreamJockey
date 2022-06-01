@@ -1,3 +1,4 @@
+using DSharpPlus.Entities;
 using DSharpPlus.Lavalink;
 using DSharpPlus.Lavalink.EventArgs;
 
@@ -9,7 +10,8 @@ namespace YumeChan.DreamJockey.Services;
 public class MusicQueueService
 {
 	private readonly Dictionary<ulong, Queue<LavalinkTrack>> _musicQueues = new();
-	
+	private readonly Dictionary<ulong, DiscordChannel> _statusChannels = new();
+
 	/// <summary>
 	/// Attempts to get the music queue for a specified guild.
 	/// </summary>
@@ -25,6 +27,7 @@ public class MusicQueueService
 		{
 			queue = new();
 			_musicQueues.Add(vc.Context.Guild.Id, queue);
+			_statusChannels.Add(vc.Context.Guild.Id, vc.Context.Channel);
 			HookLavalinkEvents(vc);
 		}
 
@@ -41,7 +44,8 @@ public class MusicQueueService
 	{
 		if (_musicQueues.ContainsKey(guildId))
 		{
-			_musicQueues[guildId].Clear();
+			_musicQueues.Remove(guildId);
+			_statusChannels.Remove(guildId);
 		}
 	}
 
@@ -93,7 +97,14 @@ public class MusicQueueService
 			// Otherwise, if the track finished in a natural way, play the next one.
 			else if (e.Reason is TrackEndReason.Finished)
 			{
-				await conn.PlayAsync(queue.Dequeue());
+				LavalinkTrack track = queue.Dequeue();
+				await conn.PlayAsync(track);
+				
+				// Announce the track in the designated music status channel.
+				if (_statusChannels.TryGetValue(conn.Guild.Id, out DiscordChannel? channel))
+				{
+					await channel.SendMessageAsync($"Now playing `{track.Title}`.");
+				}
 			}
 		}
 	}

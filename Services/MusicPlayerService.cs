@@ -192,7 +192,7 @@ public class MusicPlayerService
 			if (queue.TryDequeue(out LavalinkTrack? track))
 			{
 				await conn.PlayAsync(track);
-				return Success($"Now playing `{track.Title}`.");
+				return Success($"Skipped to next track. Now playing `{track.Title}`.");
 			}
 		}
 		
