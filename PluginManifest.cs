@@ -8,6 +8,9 @@ using YumeChan.PluginBase.Tools;
 
 namespace YumeChan.DreamJockey;
 
+/// <summary>
+/// Plugin Manifest for DreamJockey
+/// </summary>
 public class PluginManifest : Plugin
 {
 	internal const string GlobalConfigFilename = "global-config.json";
@@ -43,11 +46,11 @@ public class Dependencies : DependencyInjectionHandler
 {
 	public override IServiceCollection ConfigureServices(IServiceCollection services)
 	{
-		services.AddSingleton(services => 
-			services.GetRequiredService<IInterfaceConfigProvider<IPluginConfig>>()
-				.InitConfig(PluginManifest.GlobalConfigFilename)
-				.PopulateConfig());
-			
+		services.AddSingleton(services => services.GetRequiredService<IInterfaceConfigProvider<IPluginConfig>>()
+			.InitConfig(PluginManifest.GlobalConfigFilename)
+			.PopulateConfig()
+		);
+
 		services.AddSingleton<IdleInstancesCullingHandler>();
 		services.AddSingleton<MusicPlayerService>();
 		services.AddSingleton<MusicQueueService>();

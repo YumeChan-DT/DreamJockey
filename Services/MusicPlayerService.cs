@@ -1,3 +1,4 @@
+using DSharpPlus;
 using DSharpPlus.Lavalink;
 using YumeChan.DreamJockey.Infrastructure;
 using static YumeChan.DreamJockey.Infrastructure.OperationResults;
@@ -36,19 +37,36 @@ public class MusicPlayerService
 	/// <summary>
 	/// Disconnects from the voice channel specified in <see cref="vc"/>.
 	/// </summary>
-	/// <returns>Returns a <see cref="bool"/> specifying wether a disconnection occured (false means there was no connection to begin with)</returns>
-	public async Task<OperationResult> DisconnectAsync(VoiceCommandContext vc)
+	/// <returns>
+	/// Returns a <see cref="bool"/> specifying wether a disconnection occured
+	/// (false means there was no connection to begin with)
+	/// </returns>
+	public async Task<OperationResult> DisconnectAsync(VoiceCommandContext vc) => await GetContextGuildConnectionAsync(vc) is { Result: not null } connOp
+			? await DisconnectAsync(connOp.Result)
+			: Failure();
+
+	/// <summary>
+	/// Disconnects from the voice channel currently connected to, in guild with ID <see cref="guildId"/>.
+	/// </summary>
+	/// <returns>
+	/// Returns a <see cref="bool"/> specifying wether a disconnection occured
+	/// (false means there was no connection to begin with)
+	/// </returns>
+	public async Task<OperationResult> DisconnectAsync(ulong guildId) => _guildConnections.TryGetValue(guildId, out LavalinkGuildConnection? conn)
+			? await DisconnectAsync(conn)
+			: Failure();
+
+	/// <summary>
+	/// Internal method housing the disconnection logic.
+	/// </summary>
+	/// <param name="conn">Lavalink connection to disconnect</param>
+	/// <returns></returns>
+	private async Task<OperationResult> DisconnectAsync(LavalinkGuildConnection conn)
 	{
-		if (await GetContextGuildConnectionAsync(vc) is { Result: not null } connOp)
-		{
-			await connOp.Result.DisconnectAsync();
-			_guildConnections.Remove(vc.Channel.Guild.Id);
+		await conn.DisconnectAsync();
+		_guildConnections.Remove(conn.Guild.Id);
 
-			return Success();
-		}
-
-		// There was no connection.
-		return Failure();
+		return Success();
 	}
 
 	/// <summary>
@@ -64,7 +82,7 @@ public class MusicPlayerService
 	/// </remarks>
 	public async Task<OperationResult<IEnumerable<LavalinkTrack>>> PlayAsync(VoiceCommandContext vc, string query)
 	{
-		if ((await GetContextGuildConnectionAsync(vc, true)).Result is not { } conn)
+		if ((await GetContextGuildConnectionAsync(vc, true)).Result is not { IsConnected: true } conn)
 		{
 			return Failure<IEnumerable<LavalinkTrack>>(null, "No connection to a voice channel.");
 		}
@@ -92,10 +110,13 @@ public class MusicPlayerService
 	/// </remarks>
 	public async Task<OperationResult<LavalinkTrack>> PlayAsync(VoiceCommandContext vc, Uri uri)
 	{
-		if ((await GetContextGuildConnectionAsync(vc, true)).Result is not { } conn)
+		if ((await GetContextGuildConnectionAsync(vc, true)).Result is not { IsConnected: true } conn)
         {
         	return Failure<LavalinkTrack>(null, "No connection to a voice channel.");
         }
+
+		// Stop any current playback
+		await conn.StopAsync();
 		
 		OperationResult<LavalinkLoadResult> loadResult = await LookupTracksAsync(vc, uri);
 
@@ -237,7 +258,7 @@ public class MusicPlayerService
 		{
 			{ Status: OperationStatus.Failure } => connResult,
 			{ Result.CurrentState.CurrentTrack: null } => Failure("Sorry, there is nothing to pause."),
-			{ Result: { } conn } => await _StopAsync(conn),
+			{ Result: { IsConnected: true } conn } => await _StopAsync(conn),
 			_ => throw new InvalidOperationException()
 		};
 	}
@@ -300,7 +321,7 @@ public class MusicPlayerService
 		}
 		
 		// Otherwise grab from context
-		if (vc.GetGuildConnection() is { } existing)
+		if (vc.GetGuildConnection() is { IsConnected: true } existing)
 		{
 			// Add to dictionary for later use
 			_guildConnections.TryAdd(vc.Channel.Guild.Id, existing);
@@ -314,8 +335,15 @@ public class MusicPlayerService
 			
 			// Set bot's voice connection as deafened, for network traffic & privacy reasons
 			await created.Guild.Members[vc.Context.Client.CurrentUser.Id].SetDeafAsync(true, "[DreamJockey] Set self to deafened for network traffic & privacy.");
-
 			_guildConnections.Add(vc.Channel.Guild.Id, created);
+			
+			// Hook the disconnect event to remove the connection from the dictionary.
+			created.DiscordWebSocketClosed += (_, _) =>
+			{
+				_guildConnections.Remove(vc.Channel.Guild.Id);
+				return Task.CompletedTask;
+			};
+			
 			return created;
 		}
 

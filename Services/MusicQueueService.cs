@@ -31,15 +31,24 @@ public class MusicQueueService
 			HookLavalinkEvents(vc);
 			
 			// If the lavalink connection exists, hook leave events to properly clear the queue.
-			if (vc.GetGuildConnection() is { } conn)
+			if (vc.GetGuildConnection() is { IsConnected: true } conn)
 			{
-				conn.DiscordWebSocketClosed += OnLavalinkConnectionClosed;
+				conn.DiscordWebSocketClosed += (_, _) =>
+				{
+					ClearMusicQueue(vc.Context.Guild.Id);
+					return Task.CompletedTask;
+				};
 			}
 		}
 
 		return queue;
 	}
 	
+	/// <summary>
+	/// Attempts to get the music queue for a specified guild ID.
+	/// </summary>
+	/// <param name="guildId">ID of the guild.</param>
+	/// <returns>The music queue.</returns>
 	public Queue<LavalinkTrack>? GetMusicQueue(ulong guildId) => _musicQueues.TryGetValue(guildId, out Queue<LavalinkTrack>? queue) ? queue : null;
 
 	/// <summary>
@@ -59,7 +68,7 @@ public class MusicQueueService
 	/// <exception cref="InvalidOperationException">Thrown if a voice context connection is not established.</exception>
 	public void HookLavalinkEvents(VoiceCommandContext vc)
 	{
-		if (vc.GetGuildConnection() is not { } conn)
+		if (vc.GetGuildConnection() is not { IsConnected: true } conn)
 		{
 			throw new InvalidOperationException("No voice context connection established.");
 		}
@@ -75,7 +84,7 @@ public class MusicQueueService
 	/// <exception cref="InvalidOperationException">Thrown if a voice context connection is not established.</exception>
 	public void UnhookLavalinkEvents(VoiceCommandContext vc)
 	{
-		if (vc.GetGuildConnection() is not { } conn)
+		if (vc.GetGuildConnection() is not { IsConnected: true } conn)
 		{
 			throw new InvalidOperationException("No voice context connection established.");
 		}
@@ -123,3 +132,21 @@ public class MusicQueueService
 		return Task.CompletedTask;
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
