@@ -7,7 +7,7 @@ namespace YumeChan.DreamJockey.Services;
 /// <summary>
 /// Provides a service for queuing abilities in music playback.
 /// </summary>
-public class MusicQueueService
+public sealed class MusicQueueService
 {
 	private readonly Dictionary<ulong, Queue<LavalinkTrack>> _musicQueues = new();
 	private readonly Dictionary<ulong, DiscordChannel> _statusChannels = new();

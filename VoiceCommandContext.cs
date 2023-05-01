@@ -2,14 +2,10 @@
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
 using DSharpPlus.Lavalink;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using YumeChan.PluginBase.Tools;
 
 namespace YumeChan.DreamJockey;
 
-public class VoiceCommandContext
+public sealed class VoiceCommandContext
 {
 	public CommandContext Context { get; private init; }
 	public DiscordChannel Channel { get; init; }

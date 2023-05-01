@@ -6,9 +6,9 @@ namespace YumeChan.DreamJockey.Infrastructure.Preconditions;
 /// <summary>
 /// Checks if the calling user is present in a voice channel.
 /// </summary>
-public class RequireUserVoicePresenceAttribute : PluginCheckBaseAttribute
+public sealed class RequireUserVoicePresenceAttribute : PluginCheckBaseAttribute
 {
-	public override string? ErrorMessage { get; protected set; } = "Sorry, you must be in a voice channel to use this command.";
+	public override string ErrorMessage { get; protected set; } = "Sorry, you must be in a voice channel to use this command.";
 
 	/// <summary>
 	/// Executes the check, checking if the user is in a voice channel.

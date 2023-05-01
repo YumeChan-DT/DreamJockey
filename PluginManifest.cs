@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using System.Threading;
-using System.Threading.Tasks;
+using JetBrains.Annotations;
 using YumeChan.DreamJockey.Data;
 using YumeChan.DreamJockey.Services;
 using YumeChan.PluginBase;
@@ -11,6 +10,7 @@ namespace YumeChan.DreamJockey;
 /// <summary>
 /// Plugin Manifest for DreamJockey
 /// </summary>
+[UsedImplicitly]
 public class PluginManifest : Plugin
 {
 	internal const string GlobalConfigFilename = "global-config.json";
@@ -42,11 +42,12 @@ public class PluginManifest : Plugin
 	}
 }
 
-public class Dependencies : DependencyInjectionHandler
+public sealed class Dependencies : DependencyInjectionHandler
 {
 	public override IServiceCollection ConfigureServices(IServiceCollection services)
 	{
-		services.AddSingleton(services => services.GetRequiredService<IInterfaceConfigProvider<IPluginConfig>>()
+		services.AddSingleton(static services => services
+			.GetRequiredService<IInterfaceConfigProvider<IPluginConfig>>()
 			.InitConfig(PluginManifest.GlobalConfigFilename)
 			.PopulateConfig()
 		);

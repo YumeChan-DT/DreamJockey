@@ -1,14 +1,6 @@
-﻿using DnsClient.Internal;
-using DSharpPlus;
+﻿using DSharpPlus;
 using DSharpPlus.Entities;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using YumeChan.DreamJockey.Data;
 
 namespace YumeChan.DreamJockey.Services;
@@ -16,16 +8,16 @@ namespace YumeChan.DreamJockey.Services;
 /// <summary>
 /// Periodic service that handles disconnecting voice instances from empty channels.
 /// </summary>
-public class IdleInstancesCullingHandler
+public sealed class IdleInstancesCullingHandler
 {
 	private readonly DiscordClient _discordClient;
 	private readonly ILogger<IdleInstancesCullingHandler> _logger;
 	private readonly IPluginConfig _config;
 	private readonly MusicPlayerService _playerService;
-	private PeriodicTimer _timer;
+	private PeriodicTimer? _timer;
 
-	private Task _cullingLoop;
-	private CancellationTokenSource _cullingLoopCts;
+	private Task? _cullingLoop;
+	private CancellationTokenSource? _cullingLoopCts;
 
 	public IdleInstancesCullingHandler(DiscordClient discordClient, ILogger<IdleInstancesCullingHandler> logger, IPluginConfig config, MusicPlayerService playerService)
 	{
@@ -45,7 +37,7 @@ public class IdleInstancesCullingHandler
 		_cullingLoop = Task.Factory.StartNew(() => HandleCullingCycles(_cullingLoopCts.Token), ct);
 		
 
-		_logger.LogInformation("Started IdleInstancesCullingHandler.");
+		_logger.LogInformation($"Started {nameof(IdleInstancesCullingHandler)}");
 		return Task.CompletedTask;
 	}
 
@@ -54,9 +46,14 @@ public class IdleInstancesCullingHandler
 	/// </summary>
 	public async Task StopAsync(CancellationToken ct)
 	{
-		_cullingLoopCts.Cancel();
-		await _cullingLoop.WaitAsync(TimeSpan.FromSeconds(30), ct);
-		_logger.LogInformation("Stopped IdleInstancesCullingHandler.");
+		_cullingLoopCts?.Cancel();
+		
+		if (_cullingLoop is not null)
+		{
+			await _cullingLoop.WaitAsync(TimeSpan.FromSeconds(30), ct);
+		}
+
+		_logger.LogInformation($"Stopped {nameof(IdleInstancesCullingHandler)}");
 	}
 
 	/// <summary>
@@ -85,7 +82,7 @@ public class IdleInstancesCullingHandler
 			{
 				// If the bot is the only user, disconnect the channel
 				await _playerService.DisconnectAsync(guild.Id);
-				_logger.LogDebug("Culled idle voice instance from guild {GuildId} (channel {ChannelId}).", guild.Id, channel.Id);
+				_logger.LogDebug("Culled idle voice instance from guild {GuildId} (channel {ChannelId})", guild.Id, channel.Id);
 			}
 		});
 	}

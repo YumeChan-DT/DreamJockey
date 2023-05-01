@@ -1,4 +1,3 @@
-using DSharpPlus;
 using DSharpPlus.Lavalink;
 using YumeChan.DreamJockey.Infrastructure;
 using static YumeChan.DreamJockey.Infrastructure.OperationResults;
@@ -8,7 +7,7 @@ namespace YumeChan.DreamJockey.Services;
 /// <summary>
 /// Provides a service to manage a guild's music with basic playback controls.
 /// </summary>
-public class MusicPlayerService
+public sealed class MusicPlayerService
 {
 	private readonly MusicQueueService _queueService;
 	private readonly Dictionary<ulong, LavalinkGuildConnection> _guildConnections = new();

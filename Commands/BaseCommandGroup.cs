@@ -3,11 +3,7 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Lavalink;
-using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Threading.Channels;
-using System.Threading.Tasks;
+using JetBrains.Annotations;
 using YumeChan.DreamJockey.Infrastructure;
 using YumeChan.DreamJockey.Infrastructure.Preconditions;
 using YumeChan.DreamJockey.Services;
@@ -19,8 +15,8 @@ namespace YumeChan.DreamJockey.Commands;
 
 [Group("dreamjockey"), Aliases("dj", "music"), Description("Provides Music-oriented commands for voice channels.")]
 [RequirePermissions(Permissions.AccessChannels | Permissions.Speak)]
-[SuppressMessage("ReSharper", "UnusedMember.Global")]
-public partial class BaseCommandGroup : BaseCommandModule
+[UsedImplicitly]
+public sealed partial class BaseCommandGroup : BaseCommandModule
 {
 	private readonly MusicPlayerService _playerService;
 
