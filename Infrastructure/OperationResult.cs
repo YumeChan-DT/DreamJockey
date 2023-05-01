@@ -17,7 +17,7 @@ public record OperationResult(OperationStatus Status, string? Message = null)
 /// <param name="Result">Result value of the Operation</param>
 /// <param name="Message">(Optional) Message describing the operation's result</param>
 /// <typeparam name="TResult">Type of the Operation's Result</typeparam>
-public record OperationResult<TResult>(OperationStatus Status, TResult? Result, string? Message = null) : OperationResult(Status, Message)
+public sealed record OperationResult<TResult>(OperationStatus Status, TResult? Result, string? Message = null) : OperationResult(Status, Message)
 {
 	public static implicit operator TResult?(OperationResult<TResult> result) => result.Result;
 	public static implicit operator OperationResult<TResult>(TResult result) => new(OperationStatus.Success, result);
