@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -27,9 +27,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="DSharpPlus.Lavalink" Version="4.2.0" />
+    <PackageReference Include="DSharpPlus.Lavalink" Version="4.4.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
-    <PackageReference Include="YumeChan.PluginBase" Version="3.0.0" />
+    <PackageReference Include="YumeChan.PluginBase" Version="3.0.1" />
   </ItemGroup>
 
 </Project>
