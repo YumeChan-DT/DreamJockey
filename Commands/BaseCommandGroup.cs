@@ -15,7 +15,7 @@ namespace YumeChan.DreamJockey.Commands;
 
 [Group("dreamjockey"), Aliases("dj", "music"), Description("Provides Music-oriented commands for voice channels.")]
 [RequirePermissions(Permissions.AccessChannels | Permissions.Speak)]
-[UsedImplicitly]
+[PublicAPI]
 public sealed partial class BaseCommandGroup : BaseCommandModule
 {
 	private readonly MusicPlayerService _playerService;

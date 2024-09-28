@@ -46,7 +46,7 @@ public sealed class IdleInstancesCullingHandler
 	/// </summary>
 	public async Task StopAsync(CancellationToken ct)
 	{
-		_cullingLoopCts?.Cancel();
+		await _cullingLoopCts?.CancelAsync()!;
 		
 		if (_cullingLoop is not null)
 		{
