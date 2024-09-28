@@ -34,6 +34,11 @@
       <PrivateAssets>all</PrivateAssets>
       <Version>3.6.143</Version>
     </PackageReference>
+
+    <PackageReference Include="DotNet.ReproducibleBuilds" Version="1.2.25">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
 </Project>
