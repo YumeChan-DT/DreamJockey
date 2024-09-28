@@ -5,7 +5,6 @@
     <ImplicitUsings>true</ImplicitUsings>
     <Nullable>enable</Nullable>
     
-    <Version>1.1.2</Version>
     <Authors>Sakura Akeno Isayeki</Authors>
     <Company>Nodsoft Systems</Company>
     <Product>YumeChan DreamJockey</Product>
@@ -30,6 +29,11 @@
     <PackageReference Include="DSharpPlus.Lavalink" Version="4.5.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0" />
     <PackageReference Include="YumeChan.PluginBase" Version="4.0.38-alpha" />
+
+    <PackageReference Include="Nerdbank.GitVersioning" Condition="!Exists('packages.config')">
+      <PrivateAssets>all</PrivateAssets>
+      <Version>3.6.143</Version>
+    </PackageReference>
   </ItemGroup>
 
 </Project>
